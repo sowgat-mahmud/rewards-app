@@ -22,8 +22,9 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://rewards:rewards_password@db:5432/rewards_development
       RAILS_ENV: development
+      DATABASE_URL: postgres://rewards:rewards_password@db:5432/rewards_development
+      DATABASE_TEST_URL: postgres://rewards:rewards_password@db:5432/rewards_test
     ports:
       - "3000:3000"
 
