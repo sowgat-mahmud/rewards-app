@@ -1,0 +1,20 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Env files (don’t commit secrets)
+.env
+.env.*
+*.local
+
+# Node modules (frontend, any others)
+node_modules/
+
+# Coverage / reports
+coverage/
+*.cover
+*.log
