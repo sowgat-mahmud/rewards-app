@@ -1,4 +1,3 @@
-import React from "react";
 import type { Reward } from "../api/rewards";
 import type { User } from "../api/users";
 
@@ -18,16 +17,27 @@ const RewardsList: React.FC<RewardsListProps> = ({
   onRedeem,
 }) => {
   return (
-    <div style={{ padding: 16, borderRadius: 8, border: "1px solid #e5e7eb", marginBottom: 16 }}>
+    <div
+      style={{
+        padding: 16,
+        borderRadius: 8,
+        border: "1px solid #e5e7eb",
+        marginBottom: 16,
+      }}
+    >
       <h2 style={{ marginTop: 0 }}>Available Rewards</h2>
+
       {loading && <p>Loading rewards...</p>}
+
       {!loading && rewards.length === 0 && <p>No rewards available.</p>}
+
       {!loading && rewards.length > 0 && (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {rewards.map((reward) => {
             const canAfford =
               !!user && user.points_balance >= reward.cost_in_points;
             const isOutOfStock = !reward.available;
+            const isRedeeming = redeemingId === reward.id;
 
             let label = "Redeem";
             if (isOutOfStock) {
@@ -36,8 +46,7 @@ const RewardsList: React.FC<RewardsListProps> = ({
               label = "Not enough points";
             }
 
-            const disabled =
-              isOutOfStock || !canAfford || redeemingId === reward.id;
+            const disabled = isOutOfStock || !canAfford || isRedeeming;
 
             return (
               <li
@@ -57,6 +66,7 @@ const RewardsList: React.FC<RewardsListProps> = ({
                     {reward.inventory} in stock
                   </div>
                 </div>
+
                 <button
                   disabled={disabled}
                   onClick={() => onRedeem(reward.id)}
@@ -70,9 +80,7 @@ const RewardsList: React.FC<RewardsListProps> = ({
                     minWidth: 120,
                   }}
                 >
-                  {redeemingId === reward.id && !disabled
-                    ? "Redeeming..."
-                    : label}
+                  {isRedeeming ? "Redeeming..." : label}
                 </button>
               </li>
             );

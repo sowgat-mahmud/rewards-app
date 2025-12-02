@@ -10,3 +10,7 @@ export interface User {
 export function fetchUser(id: number): Promise<User> {
   return request<User>(`/users/${id}`);
 }
+
+export function fetchDemoUser(): Promise<User> {
+  return request<User>("/users/demo");
+}

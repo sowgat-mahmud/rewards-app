@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchUser, type User } from "../api/users";
+import { fetchUser, fetchDemoUser, type User } from "../api/users";
 import { fetchRewards, type Reward } from "../api/rewards";
 import {
   fetchUserRedemptions,
@@ -12,7 +12,6 @@ import BalancePanel from "../components/BalancePanel";
 import RewardsList from "../components/RewardsList";
 import RedemptionHistory from "../components/RedemptionHistory";
 
-const DEMO_USER_ID = 42; // seeded demo user gets ID 42
 
 const DashboardPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -31,13 +30,13 @@ const DashboardPage: React.FC = () => {
       setError(null);
 
       try {
-        const [userData, rewardsData, redemptionsData] = await Promise.all([
-          fetchUser(DEMO_USER_ID),
+        const demoUser = await fetchDemoUser();
+        const [rewardsData, redemptionsData] = await Promise.all([
           fetchRewards(),
-          fetchUserRedemptions(DEMO_USER_ID),
+          fetchUserRedemptions(demoUser.id),
         ]);
 
-        setUser(userData);
+        setUser(demoUser);
         setRewards(rewardsData);
         setRedemptions(redemptionsData);
       } catch (err) {
@@ -69,20 +68,24 @@ const DashboardPage: React.FC = () => {
       // Add new redemption at top
       setRedemptions((prev) => [result.redemption, ...prev]);
 
-      // Update reward inventory/availability locally
+      // Update reward inventory/availability locally, clamped at 0
       setRewards((prev) =>
-        prev.map((r) =>
-          r.id === rewardId
-            ? {
+        prev.map((r) => {
+            if (r.id !== rewardId) return r;
+
+            const nextInventory = Math.max(0, r.inventory - 1);
+
+            return {
                 ...r,
-                inventory: r.inventory - 1,
-                available: r.inventory - 1 > 0,
-              }
-            : r
-        )
+                inventory: nextInventory,
+                available: nextInventory > 0,
+            };
+        })
       );
     } catch (err) {
-      setError((err as Error).message);
+      const message =
+        err instanceof Error ? err.message : "Redemption failed";
+      setError(message);
     } finally {
       setRedeemingId(null);
     }
