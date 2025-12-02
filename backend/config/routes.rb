@@ -7,10 +7,11 @@ Rails.application.routes.draw do
   # Versioned API
   namespace :api do
     namespace :v1 do
+      get "users/demo", to: "users#demo"
       resources :users, only: [:show] do
-        collection do
-          get :demo      # => GET /api/v1/users/demo
-        end
+        # collection do
+        #   get :demo      # => GET /api/v1/users/demo
+        # end
         resources :redemptions, only: [:index]
       end
 

@@ -13,6 +13,8 @@ module Api
       def demo
         user = User.find_by!(email: "demo@example.com")
         render json: user_payload(user)
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Demo user not found" }, status: :not_found
       end
 
       private
