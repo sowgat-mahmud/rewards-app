@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchUser, fetchDemoUser, type User } from "../api/users";
+import { fetchDemoUser, type User } from "../api/users";
 import { fetchRewards, type Reward } from "../api/rewards";
 import {
   fetchUserRedemptions,
@@ -40,7 +40,8 @@ const DashboardPage: React.FC = () => {
         setRewards(rewardsData);
         setRedemptions(redemptionsData);
       } catch (err) {
-        setError((err as Error).message);
+        console.error("Failed to load dashboard", err);
+        setError("Failed to load dashboard");
       } finally {
         setLoading(false);
         setLoadingRewards(false);

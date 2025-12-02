@@ -1,18 +1,33 @@
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000/api/v1";
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+type ErrorResponse = {
+  error?: string;
+};
+
+export async function request<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     ...options,
   });
 
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error((body as any).error || `Request failed with ${response.status}`);
+    let body: ErrorResponse | null = null;
+
+    try {
+      body = (await response.json()) as ErrorResponse;
+    } catch {
+      body = null;
+    }
+
+    const message = body?.error ?? `Request failed with ${response.status}`;
+    throw new Error(message);
   }
 
   return response.json() as Promise<T>;
 }
-
-export { request };
